@@ -19,62 +19,62 @@ const startServer = async () => {
 startServer()
 
 
-process.on("SIGTERM", () => {
-  console.log("🔥SIGTERM SIGNAL RICEVED detected, shutting down...");
+// process.on("SIGTERM", () => {
+//   console.log("🔥SIGTERM SIGNAL RICEVED detected, shutting down...");
 
-  if (server) {
-    server.close(() => {
-      console.log("🚪 Server closed.");
-      process.exit(1);
-    });
-  } else {
-    process.exit(1);
-  }
-});
-
-
-process.on("SIGINT", () => {
-  console.log("🔥SIGINT SIGNAL RICEVED detected, shutting down...");
-
-  if (server) {
-    server.close(() => {
-      console.log("🚪 Server closed.");
-      process.exit(1);
-    });
-  } else {
-    process.exit(1);
-  }
-});
-process.on("unhandledRejection", (error: any) => {
-  console.log("🔥 Unhandled Rejection detected, shutting down...");
-  console.error(error?.message || error);
-
-  if (server) {
-    server.close(() => {
-      console.log("🚪 Server closed.");
-      process.exit(1);
-    });
-  } else {
-    process.exit(1);
-  }
-});
+//   if (server) {
+//     server.close(() => {
+//       console.log("🚪 Server closed.");
+//       process.exit(1);
+//     });
+//   } else {
+//     process.exit(1);
+//   }
+// });
 
 
+// process.on("SIGINT", () => {
+//   console.log("🔥SIGINT SIGNAL RICEVED detected, shutting down...");
 
-process.on("uncaughtException", (error: any) => {
-  console.log("🔥Uncaught Exception detected, shutting down...");
-  console.error(error?.message || error);
+//   if (server) {
+//     server.close(() => {
+//       console.log("🚪 Server closed.");
+//       process.exit(1);
+//     });
+//   } else {
+//     process.exit(1);
+//   }
+// });
+// process.on("unhandledRejection", (error: any) => {
+//   console.log("🔥 Unhandled Rejection detected, shutting down...");
+//   console.error(error?.message || error);
 
-  if (server) {
-    server.close(() => {
-      console.log("🚪 Server closed.");
-      process.exit(1);
-    });
-  } 
-  // else {
-  //   process.exit(1);
-  // }
-});
+//   if (server) {
+//     server.close(() => {
+//       console.log("🚪 Server closed.");
+//       process.exit(1);
+//     });
+//   } else {
+//     process.exit(1);
+//   }
+// });
 
-throw new Error(' i forgot to catch this local error')
+
+
+// process.on("uncaughtException", (error: any) => {
+//   console.log("🔥Uncaught Exception detected, shutting down...");
+//   console.error(error?.message || error);
+
+//   if (server) {
+//     server.close(() => {
+//       console.log("🚪 Server closed.");
+//       process.exit(1);
+//     });
+//   } 
+//   // else {
+//   //   process.exit(1);
+//   // }
+// });
+
+// throw new Error(' i forgot to catch this local error')
 
