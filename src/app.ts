@@ -4,8 +4,9 @@ import cors from "cors"
 import { router } from "./app/routes";
 import { globalError } from "./app/middlewere/globalErrorHandler";
 import NotFound from "./app/middlewere/notFound";
-
+import cookieParser from "cookie-parser";
 const app = express();
+app.use(cookieParser())
 app.use(express.json())
 app.use(cors())
 app.use("/api/v1",router)
