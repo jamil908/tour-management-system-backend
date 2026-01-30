@@ -3,17 +3,33 @@ import AppError from "../errorHelpers/appError";
 import { envVars } from "../config/env";
 import { verifyToken } from "../utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
-
+import { User } from "../modules/user/user.model";
+import httpStatus from "http-status-codes";
+import { IsActive } from "../modules/user/user.interface";
 export const checkAuth = (...authRoles : string[])=>async (req : Request ,res : Response, next : NextFunction)=>{
   try {
     const accessToken = req.headers.authorization;
     if(!accessToken){
-      throw new AppError(403,"did not recieved token")
+      throw new AppError(403,"did not received token")
     }
     const verifiedToken = verifyToken(accessToken,envVars.JWT_ACCESS_SECRET) as JwtPayload
-   console.log("verify token")
+
+     const isUserExist = await User.findOne({email:verifiedToken.email})
+              if(!isUserExist){
+                  throw new AppError(httpStatus.BAD_REQUEST,"email does not exist")
+              }
+              if(isUserExist.isActive === IsActive.BLOCKED){
+                  throw new AppError(httpStatus.BAD_REQUEST,"user is blocked")
+              }
+              if(isUserExist.isActive === IsActive.INACTIVE){
+                  throw new AppError(httpStatus.BAD_REQUEST,"user is inactive")
+              }
+              if(isUserExist.isDeleted){
+                  throw new AppError(httpStatus.BAD_REQUEST,"user is deleted")
+              }
+  
     if(!authRoles.includes(verifiedToken.role)){
-      throw new AppError(403,"You are not permited to view this route")
+      throw new AppError(403,"You are not permitted to view this route")
     }
     req.user = verifiedToken
     next()
