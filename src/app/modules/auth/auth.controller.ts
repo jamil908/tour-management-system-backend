@@ -4,15 +4,7 @@ import { catchAsync } from "../../utils/catchAsync"
 import { sendResponse } from "../../utils/sendResponse"
 import httpStatus from 'http-status-codes'
 import { AuthService } from "./auth.service"
-import AppError from "../../errorHelpers/appError"
-import { setAuthCookie } from "../../utils/setCookie"
-import { createUserToken } from "../../utils/usetToken"
-import { envVars } from "../../config/env"
-import { JwtPayload } from "jsonwebtoken"
-
-
-
-const credentialsLogin = catchAsync(async (req : Request ,res : Response, next : NextFunction)=>{
+const credentialsLogin = catchAsync(async (req : Request ,res : Response, next : NextFunctionon)=>{
     // const user = await UserServices.createUser(req.body)
     const logginInfo = await AuthService.credentialsLogin(req.body)
 
