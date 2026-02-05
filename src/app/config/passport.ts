@@ -3,6 +3,46 @@ import { Strategy as googleSrategy, Profile, VerifyCallback } from "passport-goo
 import { envVars } from "./env";
 import { User } from "../modules/user/user.model";
 import { Role } from "../modules/user/user.interface";
+import { Strategy as localSrategy } from "passport-local";
+import bcryptjs from 'bcryptjs'
+
+
+passport.use(
+    new localSrategy(
+
+        {
+            usernameField:"email",
+            passwordField:"password",
+
+        },
+        async(email:string,password:string,done)=>{
+            try {
+                const user = await User.findOne({email})
+                // if(!user){
+                //     return done(null,false,{message:"no user found with this email"})
+                // }
+                if(!user){
+                    return done("no user found with this email")
+                }
+                const isGoogleAuthencticated = user.auths?.some((auths)=> auths.provider == "google")
+                // if(isGoogleAuthencticated){
+                //     return done(null,false,{message:' you have previously logged in with google please use google login, IF you want to use email and password login , please set your password first.'})
+                // }
+                if(isGoogleAuthencticated && !user.password){
+                    return done(' you have previously logged in with google please use google login, IF you want to use email and password login , please set your password first.')
+                }
+                const isPasswordMatch = await bcryptjs.compare(password,user.password as string)
+                if(!isPasswordMatch){
+                    return done(null,false,{message:"incorrect password"})
+                }
+                return done(null,user)
+            } catch (error) {
+                console.log("local strategy error",error)
+                return done(error)
+            }
+        }
+    )
+)
 
 passport.use(
     new googleSrategy(

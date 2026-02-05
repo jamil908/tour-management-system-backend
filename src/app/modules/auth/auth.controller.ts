@@ -1,22 +1,46 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express"
 import { catchAsync } from "../../utils/catchAsync"
 import { sendResponse } from "../../utils/sendResponse"
 import httpStatus from 'http-status-codes'
 import { AuthService } from "./auth.service"
-const credentialsLogin = catchAsync(async (req : Request ,res : Response, next : NextFunctionon)=>{
+import { setAuthCookie } from "../../utils/setCookie"
+import AppError from "../../errorHelpers/appError"
+import { envVars } from "../../config/env"
+import { createUserToken } from "../../utils/usetToken"
+import { JwtPayload } from "jsonwebtoken"
+import passport from "passport"
+const credentialsLogin = catchAsync(async (req : Request ,res : Response, next : NextFunction)=>{
     // const user = await UserServices.createUser(req.body)
-    const logginInfo = await AuthService.credentialsLogin(req.body)
+    // const logginInfo = await AuthService.credentialsLogin(req.body)
+    passport.authenticate('local',async(error:any ,user:any, info:any)=>{
+        if(error){
+            return next(new AppError(httpStatus.BAD_REQUEST,error.message || "Something went wrong"))
+        }
+        if(!user){
+            return next(new AppError(httpStatus.UNAUTHORIZED,info.message || "Invalid credentials"))
+        }
+        const userTokens= createUserToken(user)
 
-   setAuthCookie(res,logginInfo)
+        const {password, ...rest}= user.toObject()
+        
+        setAuthCookie(res,userTokens)
    
        sendResponse(res,{
         success :true,
         statusCode : httpStatus.OK,
             message : "LoggedIn successfully",
-            data : logginInfo
+            data : {
+                accessToken: userTokens.accessToken,
+                refreshToken: userTokens.refreshToken,
+                user: rest
+            }
             
     })
+    })(req,res,next)
+
+   
 })
 const getAccessToken = catchAsync(async (req : Request ,res : Response, next : NextFunction)=>{
     // const user = await UserServices.createUser(req.body)
